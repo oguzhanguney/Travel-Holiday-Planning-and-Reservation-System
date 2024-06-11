@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html lang="en"
+      class="light-style layout-menu-fixed"
+      dir="ltr"
+      data-theme="theme-default"
+      data-assets-path="../assets/"
+      data-template="vertical-menu-template-free">
+
+@* _AdminDashboardHeader çağırmak için:  *@
+@await Component.InvokeAsync("_AdminDashboardHeader")
+
+<body>
+    <!-- Layout wrapper -->
+                        <div class="row">
+                            @* _DashboardBanner(ilk kısım) çağırmak için:  *@
+                            @await Component.InvokeAsync("_DashboardBanner")
+
+                            @* _Cards1Statistic (card:1-sağ iki card) çağırmak için: *@
+                            @await Component.InvokeAsync("_Cards1Statistic")
+
+
+                            @* _TotalRevenue (ilk card altındaki grafik) çağırmak için: *@
+                            @await Component.InvokeAsync("_TotalRevenue")
+
+                            @* _Cards2Statistic (card:1 altındaki 3 Card) çağırmak için: *@
+                            @await Component.InvokeAsync("_Cards2Statistic")
+
+                        </div>
+                        <div class="row">
+                            @* _DestinationStatistic (grafik altındaki destination istatistik) çağırmak için: *@
+                            @* @await Component.InvokeAsync("_DestinationStatistic") *@
+
+                            @* _DestinationStatistic2 (grafik altındaki ikinci bölüm) çağırmak için: *@
+                            @* @await Component.InvokeAsync("_DestinationStatistic2") *@
+
+                            @* _AdminGuideList (grafik altındaki üçüncü bölüm) çağırmak için: *@
+                            @* @await Component.InvokeAsync("_AdminGuideList")  *@
+
+                        </div>
+                    
+
+    </div>
+</body>
+</html>
+
+

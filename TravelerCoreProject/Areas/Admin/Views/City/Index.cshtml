@@ -1,0 +1,148 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Şehir - Ülke İşlemleri</h2>
+<br />
+<button id="btngetlist" type="button" class="btn btn-outline-info">Şehir Listesi</button>
+<button id="btngetbyid" type="button" class="btn btn-outline-primary">Şehir Getir</button>
+<button id="btnaddcity" type="button" class="btn btn-outline-success">Şehir Ekle</button>
+<button id="btndeletecity" type="button" class="btn btn-outline-danger">Şehir Sil</button>
+
+<br /><br />
+
+
+<div id="citylist">
+    *Şehir listesi burada listelenecek.
+</div>
+
+<br /><br />
+<div>
+    <p>Şehir Getir:</p>
+    <input type="text" id="txtid" placeholder="Şehir ID değerini giriniz" class="form-control" />
+</div>
+<br />
+
+<br />
+<div id="destinationlistbyid">
+
+</div>
+<br />
+<div>
+    <p>Şehir Sil:</p>
+    <input type="text" id="txtcityid" placeholder="Silinecek ID değerini giriniz" class="form-control" />
+</div>
+<br />
+<div>
+    <p>Şehir Ekle</p>
+    <input type="text" id="txtcity" placeholder="Şehir adını giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtdaynight" placeholder="Gün-Gece sayısı giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtprice" placeholder="Fiyat giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtcapacity" placeholder="Kapasiteyi giriniz" class="form-control" />
+    <br />
+</div>
+
+<script>
+    //şehir listele:
+    $("#btngetlist").click(function () {
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "Get",
+            url: "/Admin/City/CityList/",
+            success: function (func) {
+                let w = jQuery.parseJSON(func);
+                console.log(w);
+
+                let tablehtml = "<table class=table table-bordered> <tr><th> Şehir Adı</th> <th> Gün-Gece</th> <th> Fiyat</th> </tr>";
+                $.each(w, (index, value) => {
+                    tablehtml += `<tr> <td>${value.City}</td> <td>${value.DayNight}</td> <td>${value.Price} ₺</td> </tr>`
+                });
+                tablehtml += "</table>";
+                $("#citylist").html(tablehtml);
+            }
+        });
+    });
+
+    //şehir ekle:
+    $("#btnaddcity").click(function () {
+        let cityvalues = {
+            City: $("#txtcity").val(),
+            DayNight: $("#txtdaynight").val(),
+            Price: $("#txtprice").val(),
+            Capacity: $("#txtcapacity").val()
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/Admin/City/AddCityDestination/",
+            data: cityvalues,
+            success: function (func) {
+                let result = jQuery.parseJSON(func);
+                alert("Şehir - Rota Başarılı bir şekilde eklendi!");
+            }
+        });
+    });
+
+    //İd'ye göre şehir getirme:
+    $("#btngetbyid").click(function () {
+        let id = $("#txtid").val();
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "GET",
+            url: "/Admin/City/GetById/",
+            data: { DestinationID: id },
+            success: function (response) {
+                if (response.success) {
+                    // Başarılı yanıt geldiğinde tabloyu doldur
+                    let result = jQuery.parseJSON(response.data);
+                    let htmlstr = `<table class="table table-bordered">
+                                        <tr>
+                                            <th>Şehir Adı</th>
+                                            <th>Gün - Gece</th>
+                                            <th>Fiyat</th>
+                                        </tr>
+                                        <tr>
+                                            <td>${result.City}</td>
+                                            <td>${result.DayNight}</td>
+                                            <td>${result.Price} ₺</td>
+                                        </tr>
+                                    </table>`;
+                    $("#destinationlistbyid").html(htmlstr);
+                } else {
+                    // Başarısız yanıt geldiğinde hata mesajı göster
+                    $("#destinationlistbyid").html(`<div class="alert alert-danger">${response.message}</div>`);
+                }
+            },
+            error: function () {
+                $("#destinationlistbyid").html(`<div class="alert alert-danger">Bir hata oluştu.</div>`);
+            }
+        });
+    });
+
+    //silme işlemi:
+    $("#btndeletecity").click(x => {
+        let id = $("#txtcityid").val();
+        $.ajax({
+            url: "/Admin/City/DeleteCity/" + id,
+            type: "post",
+            contentType: "application/json",
+            dataType: "json",
+            success: function (fun3) {
+                alert("Şehir başarıyla silindi!");
+            }
+        });
+    });
+
+</script>
+
+
+
+

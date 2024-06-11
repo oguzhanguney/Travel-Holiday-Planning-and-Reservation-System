@@ -1,0 +1,11 @@
+﻿namespace TravelerCoreProject.CQRS.Results.GuideResults
+{
+    public class GetAllGuideQueryResult
+    {
+        //rehberler ile ilgili getirmek istedigimiz bilgiler:
+        public int GuideId { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Image { get; set; }
+    }
+}

@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_UILayout.cshtml";
+}
+
+@*Section:1  viewcopmonenti çağırmak için:(_SliderPartial)*@
+@await Component.InvokeAsync("_SliderPartial")
+
+@*Section:2 viewcomponenti çağırmak için:(_PopularDestinations)*@
+@await Component.InvokeAsync("_PopularDestinations")
+
+@*Section:3 viewcomponenti çağırmak için:(_Statistics)*@
+@await Component.InvokeAsync("_Statistics")
+
+@*part:4 viewcomponenti çağırmak için:(_Feature)*@
+@await Component.InvokeAsync("_Feature")
+
+@* Section:5 viewcomponenti çağırmak için:(_SubAbout)*@
+@await Component.InvokeAsync("_SubAbout")
+
+@* Section:6 viewcomponenti çağırmak için:(_Testimonial) *@
+@await Component.InvokeAsync("_Testimonial")
+
+
+
+

@@ -1,0 +1,33 @@
+﻿@model ContactUs
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Bize Ulaşın Mesajları/İçerik</h1>
+<br />
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-md-9">
+                <h5>Konu:@Model.Subject</h5>
+                <h6>
+                    Gönderen: @Model.Name <<a href="mailto:@Model.Mail">@Model.Mail</a>>
+                </h6>
+            </div>
+            <div class="col-md-3 d-flex justify-content-end">
+                <td>@Model.MessageDate.ToString("dd.MMM.yyyy")</td>
+
+            </div>
+        </div>
+
+
+    </div>
+    <div class="card-body">
+        <br />
+        <p>
+            Mesaj:
+            <br />@Model.MessageBody
+        </p>
+    </div>
+

@@ -1,0 +1,54 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Erişim Reddedildi</title>
+	<link rel="stylesheet" href="~/css/page403.css" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+</head>
+<body>
+    <h1>403</h1>
+    <div>
+        <p>> <span>HATA KODU</span>: "<i>HTTP 403 Yetkisiz Erişim</i>"</p>
+        <p>> <span>HATA AÇIKLAMASI</span>: "<i>Erişim engellendi. Bu Sunucudaki Bu Sayfaya Erişim İzniniz Yok.</i>"</p>
+        <p>> <span>HATANIN MUHTEMEL SEBEBİ</span>: [<b>Yürütme erişimi yasak, okuma erişimi yasak, yazma erişimi yasak, SSL gerekli, SSL 128 gerekli, ip adresi reddedildi, istemci sertifikası gerekli, site erişimi reddedildi, çok fazla kullanıcı, geçersiz yapılandırma, parola değişikliği, eşleyici erişimi reddedildi, istemci sertifikası iptal edildi, dizin listeleme reddedildi, istemci erişim lisansları aşıldı, istemci sertifikası güvenilmez veya geçersiz, istemci sertifikasının süresi doldu veya henüz geçerli değil, pasaportla oturum açma başarısız oldu, kaynak erişimi reddedildi, sonsuz derinlik reddedildi, aynı istemci IP'sinden çok fazla istek</b>...]</p>
+        <p>> <span>BU SUNUCUDA ERİŞİM İZNİNİZİN BULUNDUĞU BAZI SAYFALAR</span>: </p>
+        <div class="mt-5 d-grid gap-2 d-md-block">
+            [<a href="/Login/LogOut" class="btn btn-warning">Giriş Yap</a>]
+            [<a href="/Default/Index" class="btn btn-warning">Ana Sayfa</a>]
+            [<a href="/Destination/Index/" class="btn btn-warning">Rotalar</a>]
+            [<a href="/Guide/Index/" class="btn btn-warning">Rehberlerimiz</a>]
+            [<a href="/Contact/Index/" class="btn btn-warning">İletişim</a>]
+        </div>
+    </div>
+    <a class="avatar" href="https://github.com/oguzhanguney" title="Bana ulaşmak için linke tıklayınız ve takip etmeyi unutmayınız. :-)"><img src="https://avatars.githubusercontent.com/u/155248994?v=4" /></a>
+
+
+</body>
+</html>
+
+<script>
+	var str = document.getElementsByTagName('div')[0].innerHTML.toString();
+	var i = 0;
+	document.getElementsByTagName('div')[0].innerHTML = "";
+
+	setTimeout(function () {
+		var se = setInterval(function () {
+			i++;
+			document.getElementsByTagName('div')[0].innerHTML = str.slice(0, i) + "|";
+			if (i == str.length) {
+				clearInterval(se);
+				document.getElementsByTagName('div')[0].innerHTML = str;
+			}
+		}, 10);
+	}, 0);
+
+</script>
+

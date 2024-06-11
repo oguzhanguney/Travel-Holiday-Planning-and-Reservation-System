@@ -1,0 +1,1422 @@
+
+KATMANLAR::
+
+############################################################################################################################################################
+
+1)Entityleri yazmak için 2 temel kavramýmýz var.
+	Concrete:Somut ifadeleri tuttugumuz yer yani classlar.
+	Abstract:Soyut ifaderleri tuttugumuz yer yani interfaceler.
+
+	Concrete klasörünün içine class larý yazmaya baþlayacagýz.
+	*Tüm entitylerimizin id'lerinin üstüne Key attr ekleyelim(primary key atamasý)
+		Classes:
+			HomePage:
+			1)Destination(gidilecek yerler)
+			2)About(hakkýmýzda sayfasý)
+			3)About2(hakkýmýzda sayfasý müþteri önemi kýsmý )
+			4)Guide(hakkýmýzda sayfasý rehberler kýsmý)
+			5)Feature(Öne çýkanlar büyük resim-homepage)
+			6)Feature2(öne çýkanlar diðer resimler-homepage)
+			7)SubAbout(Read More-homepage)
+			8)Testimonial(müþteri yorumlarý/Referanslar-homepage)
+			9)Newsletter(Bülten -homepage)
+			10)Contact(page)
+			
+	Þimdi Entity katmanýmýza Entity framework paketlerimizi yükleyelim.
+		(5.0.12 sürüm)
+		Microsoft.EntityFrameworkCore
+		Microsoft.EntityFrameworkCore.Design
+		Microsoft.EntityFrameworkCore.Tools
+		Microsoft.EntityFrameworkCore.SqlServer
+
+############################################################################################################################################################
+
+
+
+2)Data Access Layer Katmaný için Paketleri yükleyelim.
+		Microsoft.EntityFrameworkCore
+		Microsoft.EntityFrameworkCore.Design
+		Microsoft.EntityFrameworkCore.Tools
+		Microsoft.EntityFrameworkCore.SqlServer
+	*Data Access Layer  katmanýna referans olarak Entity layer katmanýný referans olarak ekliyoruz.
+
+	Öncelikle 4 Tane klasör oluþturalým(Abstract-Concrete-EntityFramework-Repository)
+		1)Concrete:
+			Concrete klasörüne ilk classýmýzý ekleyelim.(context)
+			Context Class:Baðlantý adresimizi ve SQl e yansýtýlacak olan tablolarý tutan sýnýf.
+			-Context içerisinde Db baðlantýmýzý saðlamak için metotumuzu yazalým.
+			-2.olarak entitylerimizi DbSet olarak çaðýrmamýz gerekir.
+
+			Þimdi Migrations Ýþlemlerini yapmamýz gerekiyor.
+				Bu kýsýmda Context sýnýfýnda oluþturulmuþ olan DbSet türündeki property leri birer tablo olarak Db mize aktaracagýz.
+				Package Manager Console:
+					Default Project:DataAccessLayer Choosen.
+					codes:
+						1)add-migration mig1
+						2)update-database
+		2)Repository:
+			Repository tarafýnda bazý metotlar tanýmlayacagýz.Bu metotlar CRUD metotlarýný oluþturmamýz için gerekli olan metotlar.
+			Burada Generic bir yapý kullanacagýz.Eðer Generic yapý kullanmazsak herbir metot için repository tarafýnda imza atmamýz gerekecek.
+			Ýlk olarak GenericRepository classýný oluþturalým.Diðer Repolarýmýz EntityFramework klasörü içerisinde ilerleyecek
+
+		3)Abstract:
+			Buraya bir interface ekleyecegiz.Interfaceler classlarým içerisinde çaðýracagým metotlarýn imzasýný tutacak.Yani metotlarý interface'de tanýmlayacagýz,Bunlar birer imza olacak,daha sonra bu metotlarýn içini
+			classlarýn içine dolduracagýz.
+			Burada her entity için Bir Ýnterface tanýmlayacagýmýza Generic bir interface tanýmlayýp tümünde kullanabiliriz. Böylelikle özel interfacelerde Genericten kalýtým alarak kullanabiliriz.
+
+		4)EntityFramework:
+			Bu kýsýmda tüm interfacelerimiz için birer Ef oluþturacagýz ve miras olarak genericrepository ve her bir interface'in mirasýný aldýracagýz.
+
+
+
+############################################################################################################################################################		
+
+
+
+3)Business Layer katmaný   için paketleri yükleyelim.
+		Microsoft.EntityFrameworkCore
+		Microsoft.EntityFrameworkCore.Design
+		Microsoft.EntityFrameworkCore.Tools
+		Microsoft.EntityFrameworkCore.SqlServer
+
+	*Business katmanýna referans olarak DAL ve EL katmanlarýný ekliyoruz.
+
+	Öncelikle 3 tane klasör ekleyelelim(-)
+		1)Abstract:
+			Generic servisleri ve diðer servisleri tuttuðumuz yer.
+			Buraya GenericService(interface) ekleyelim.Amacýmýc Concrete tarafýnda yapacagýmýz business metotlarýnýn imzalarýný tanýmlamak.
+			//Business tarafýna gelmeden önce Business a gelecek tüm metotlardan GenericServisten geçecek.Daha sonra Business Concrete'e gelecek.
+
+		2)Concrete:
+			Burada Tüm entitylerimiz için Birer Manager class'ý oluþturuyoruz.
+			ilk olarak AboutManager oluþturalým.Diðerlerini ihtiyacýmýz oldukça tanýmlayacagýz.
+
+		3)ValidationRule:
+			Validasyon kurallarýnýn belirleneceði yer.Fluent validationa baðlý olarak çalýþacak sýnýflarýn kýsýtlamalarýný tutacak.
+			BusinessLayer manage nuget package:fluentvalidation
+			Burada Her bir entity için ayrý ayrý validasyonlar yazacagýz.(class).
+			FluentValidation larý UI tarafýnda kullanmak için UI' a da ekleyelim.
+
+
+############################################################################################################################################################
+
+
+
+4)Presentation katmaný(UI) için paketleri yükleyelim.
+		Microsoft.EntityFrameworkCore
+		Microsoft.EntityFrameworkCore.Design
+		Microsoft.EntityFrameworkCore.Tools
+		Microsoft.EntityFrameworkCore.SqlServer
+	*UI katmanýna referans olarak DAL-EL-Business katmanlarýný ekliyoruz.
+
+	-Artýk controller tarafýna baþlayabiliriz.Ýhtiyacýmýz olan alaný Business tarafýnda oluþturup kullanacagýz.
+	-Bir DefaultController oluþturalým.
+	-Bizim birde Layout sayfasýna ihtiyacýmýz var.View/Shared Add View 
+	-DefaultController Index/View Layoutumuzu seçerek oluþturalým.
+	-wwwroot bölümüne temamýzý ekleyelim.
+	-Web sitemizi çalýþtýrdýk ve inceledik.(traversal-starter/index.html)
+		Aslýnda anasayfamýzý partiallara böldük.birden fazla partial var.
+	-Temamýzýn indexini UILayout'un içine yapýþtýralým.
+		Bizim layoutumuzda navbar ve footer kýsmý olacak.
+		-UILayout'a Gidelim Dosya adresimizi düzenleyelim.Templata CSS baþlýgý altýna href olarak ~/Traversal-Starter/assets/css/style-starter.css
+		-Ardýndan Scriptlerin linklerinide düzenliyoruz. ~/Traversal-Starter/
+		-<!-- Template JavaScript --> ~/Traversal-Starter/
+		-<!--//MENU-JS--> ~/Traversal-Starter/
+
+		-Sectionlarý Ýndex sayfamýza çekiyoruz.
+		-Þimdi UILayotumuzu partiallara ayýralým.
+			-View klasörünün içine Bir LayoutPartial Klasörü ekleyelim.
+			-Bu Klasöre Bir Razor View (create a partial--_HeaderPartial)
+			-Bunlarý yapmamýzdaki temel amaç layout sayfasýný temizlemek.Layoutumuzda sadece partialasync metotlarý ile partiallarý çaðýrmak istiyorum.Böylece layout sayfamýz temiz olacak.
+			-Navbar partial'da düzenlemeler yaptýk.
+			-Index.cshtml deki alanlarý hep veritabanýna baðlý olarak çekecegimiz için bu kodlarý viewcomponentlere ayýralým.componentler üzerinden çekelim.(index sayfamýzýda temizlemiþ olacagýz.)
+				-UI tarafýnda bir klasör oluþturalým.(ViewComponents)
+					-bu klasörün içine Anasayfa için (default) bir klasör ekleyelim.
+						-Default'un içine class lar ekleyecegiz.
+
+						1) _SliderPartial: bu metot ViewComponent sýnýfýndan miras alacak.(*viewcomponentler sayesinde partiallara direk eriþimi engellemiþ oluruz.)
+							-Daha sonra View/Shared içine Components klasörü ekleyelim.
+								-Bu klasörün içine _SliderPartial klasörü ekledik. Bu klasör içine Partial view ekliyoruz (name:default)=index sayfamýzdaki slider kodlarýný buraya çektik.
+						2)_PopularDestinations:
+							-View/Shared/Components klasörüne _PopularDestinations klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+							-Destination alanýný tamamen veritabanýndan çekecegimiz için dinamik olarak SQL servera gidip düzenlemeleri yapýyoruz.
+								Bunlarý veritabanýndan çekmek için Öncelikle Business katmanýna gidio Concrete klasörüne DestinationManager classýný ekliyoruz.
+								Daha sonra _PopularDestionations sýnýfýna gelip DestinationManager sýnýfýndan nesne türetecegiz.
+						3)_Statistics:
+							--View/Shared/Components klasörüne _Statistics klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+						4)_Features:
+							--View/Shared/Components klasörüne _Feature klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+							--veritabanýndaki verileri çekmek için feature manager ekleyelim.
+							--Burada öne çýkan resimlerin bs kodlarý farklý oldugu için bir foreach kullanamayýz.Burada viewbag ler aracýlýgýyla taþýyacagýz.
+								-Sql Features tablosuna gidip düzenlemeleri yapalým.
+						5)_SubAbout:
+							--View/Shared/Components klasörüne _SubAbout klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+							--SubAbout için bir business katmanýnda manager a ihtiyacýmýz var.
+							--veritabanýnda tabloda düzenlemeleri yaptýk.
+						6)_Testimonial:
+							----View/Shared/Components klasörüne _Testimonial klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+							--Testimonial için bir business katmanýnda manager a ihtiyacýmýz var.
+							--veritabanýnda tabloda düzenlemeleri yaptýk.
+						7)footerpartial a gidip footer ayarlamalarýný da gerçekleþtirdik.
+
+			-Destination sayfamýz için yeni bir controller ekledik(destination) ve view oluþturduk.(Layout olarak UILayoutu kullandýk.)
+				-buradaki amacýmýz destination sayfasýnda þehirlere týkladýgýmýzda detaylarýna yönlendirmek.
+				-öncelikle ServicesHtml kýsmýnda benim sayfalarýmý listelemem gerekiyor.ikinci temamýzýn serviceshtml sayfasýna gidelim.
+					Buranýn içindeki tüm verileri viewimiza kopyaladýk.
+					index sayfasýna model olarak eklememiz için _ViewImports.cshtml sayfasýna  @using EntityLayer.Concrete
+
+				-DestinationDetails e gitmesi için controllerde metot oluþturduk ve view oluþturduk.(UILayoutu kullanacak.)
+
+					-temamýzýn içerisindeki blog-single sayfasýnýn içindekileri viewa kopyalayalým.
+					-DestinationDetails için veritabanýnda Destination tablomuza yeni sütun ekleyelim.
+						Entitylerde yaptýgýmýz deðiþikliklerden sonra:
+							-package manager console: default project:DataAccessLayer
+								1)add-migration mig_add_destination_details
+								2)update-database
+					-Destination controllerda rota detaylarýna gitmek için :
+						Öncelikle DestinationManager da id ye göre gitmesi gerekiyor.
+							Burada ilk olarak yapmamýz gereken IGenericDal a gitmeliyiz. Yeni metot:  T GetByID(int id);
+							Daha sonra GenericRepositorye gidip implement interface yapmalýyýz Ve yeni ekledigimiz bu metodun içini doldurmamýz gerekiyor.
+							Bunlarýn sonunda Destinationmanager da getbyid metodunun içini doldurabiliriz.
+					-Bu iþlemlerden sonra Controllerýmýzda DestinationDetails(int id) metodunu tamamlayabiliriz.
+					-Belirli bir id ye ait alanlarý getirebiliyor muyuz test etmek için viewe gidip  @model EntityLayer.Concrete.Destination ekledik.
+						Body içerisine h1 le bir test alaný oluþturalým.
+						
+					-Daha sonra Destination controllerda indexin viewina gidip linkleme iþlemini yapalým.
+						Linkleme iþlemlerini yaptýktan sonra DestinationDetails sayfasýný düzenledik.
+					
+					-Yorumlarý DestinationDetails sayfamýza baðlamak için öncelikle comments adýnda yeni bir entity oluþturmalýyýz ve bunu destination ile iliþkilendirmeliyiz.
+						-iliþkiyi oluþturmak için Destination sýnýfýnda ve comment sýnýfda gerekli entityleri oluþturduk 
+						-Bu iþlemler sonrasýnda DataAccessLayer katmanýnda Concrete içerisinde contexte  Comments sýnýfýný dbset olarak eklememiz gerekiyor.
+						-bu iþlemler sonucunda veritabanýný güncellememiz gerekiyor.
+							package manager console: default project:DAL
+								1)add-migration mig_add_comment
+								2)update-database
+						-Daha sonra Veritabanýnda New database diagram diyip destination ve commentsi seçiyoruz.Böylelikle iliþkiyi oluþturmuþ oluyoruz.
+						
+					-DestinationDetails Sayfasýnda bazý revizyonlar yapacagýz.
+						Yorumlar kýsmýný parçalara ayýrarak baþlayalým.
+							-@* Yorumlarýn listelendiði kýsým: *@ ve @* Bir yorum býrakýn kýsým: *@ Viewcomponent kullanarak parçalara ayýralým.
+								-ViewComponente gidip yeni bir klasör oluþturalým.(Comment)
+							1)CommentList:
+								-View/Shared/Components klasörüne _CommentList klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+								-Db deki yorumlarý getirmek için öncelikle backend kýsmýnda kodlarýmýzý yazmamýz gerekir.Bunun için:
+									-UI:Viewcomponent:CommentList e gidelim.
+									-DAL : Abstract :Generic sýnýfýna baktýgýmýz zaman þartlý listeleme metodu mevcut degil.öncelikle bu metodu tanýmlamalýyýz.
+													 Tanýmladýgýmýz bu yeni metodu genericrepository içerisine de dahil etmemiz gerekiyor.									 
+										 -Bu iþlemlerden önce Comment için Dal ve Ef oluþturalým.
+										 -Daha sonra bunu business katmanýnda çaðýrmamýz gerekiyor.
+											Business:Concrete add class(Manager) ve Abstract: add interface(interface) diyerek service ini ekliyoruz.
+										 -Bu iþlemlerden sonra _CommentList tarafýnda CommentManager'i çaðýrmamýz gerekiyor.
+											Ayrýca DestinationDetails sayfasýnda Commenti baðlamak için await komutunun sonuna birde parametre olarak id göndermem gerekiyor.
+											-Default sayfamýzý düzenlemeye geçebiliriz.
+
+							2)AddComment:
+								-View/Shared/Components klasörüne _AddComment klasörünü ekleyelim. Ve partial viewini oluþturalým.(name:default)
+								-Öncelikle AddComment'in defaultunu revize edelim.
+								-Daha sonra _AddComment classýna get ve post metotlarýný oluþturalým ve Tadd in definationýna gidelim.
+								-Bu þekilde istedigimiz formatta yorum yaptýrmak için Ajax kullanmamýz gerekecek yoksa hata fýrlatacak.Yani Addcomment kýsmýný viewcomponent olarak degilde partial olarak kullanacagýz.
+
+								-Ajax için Yeni bir controller tanýmlayalým ve içerisinde oluþturalým.(commentController)
+									-yorum iþlemlerini buraya kopyaladýk(to AddComment.cs)
+									-Ardýndan AddComment actionuna partial view ekleyelim.
+									-Form metodumuz post olmasýna ragmen istedigimiz formatta getirme iþlemi yapýlmadý ve hata verdi. bunun sebebide return partialview olmasý.Yorumu yaptýrmak için ajax iþlemine ihtiyacýmýz var.
+									-Artýk ViewComponent içindeki _AddComment sýnýfýna ihtiyacýmýz kalmadý.Ayný zamanda Views:Shared:Component:Addcommenti kaldýralým.
+								-Ajaxa gerek yok farklý bir þekilde yapacagýz.
+									-CommentControllerda metodu IActionResult türünde tanýmladýk.
+									-Viewina gittigimiz zaman bizim form metodumuz arka tarafta bir partialla beraber çalýþýyor. formumuza yönlendirme iþlemi yapmalýyýz.(form method="post" asp-action="AddComment" asp-controller="Comment")
+									-Destinasyon Id sini sayfaya gelen Viewbag id deðeri ile taþýyarak almamýz gerekecek.
+										        public PartialViewResult AddComment(int id)
+												{
+													ViewBag.i = id;
+													return PartialView();
+												}						*******Viewbag sonradan eklendi.
+
+												*<input type="text" name="DestinationID" hidden class="form-control" placeholder="Destinasyon ID" required=""
+												value="@ViewBag.i">
+																	*******AddCommentcshtml de sonradan eklendi.
+
+							Identity Ýþlemleri:
+
+								-Bizim yorum yapma iþlemi ve Rezervasyon iþlemleri için identity'e ihtiyacýmýz var.
+									Yani kiþi sisteme authonatice olsun ki static yapýlardan kurtulalým ve tamamen dinamik bir yapýmýz olsun.
+								-Kurmamýz gereken 2 tane paket var.
+									Bu paketler 3 farklý katamana yüklenecek(UI-DAL-EL)
+										1)Microsoft.AspNetCore.Identity(bu paket sayesinde register ve login iþlemleri çok daha pratik ve güvenli bir þekilde gerçekleþir.Rolleme iþlerinde kolaylýk saglar.)
+										2)Microsoft.AspNetCore.Identity.EntityFrameworkCore(5.0.12)
+								-Öncelikle EL da Concrete 'e Yeni bir class ekleyelim(AppUser):User propertileri eklemek  için kullanacagýz
+								-EL Concrete:Add class (AppRole) :rolleme iþlemlerinde kullanacagýz.
+									-Bu iþlemleri Dbcontexte bildirmemiz gerekiyor migration oluþturmamýz yeterli degil.
+										1)DAL:Concrete:Context Artýk DbContexten miras degil IdentityDbContext'ten miras aldýracagýz.(public class Context:IdentityDbContext<AppUser,AppRole,int>)
+											-Bu iþlemden sonra DbSet yapmamýza gerek yok identitydbcontext kendisi otomatik olarak çaðýracak.
+										2)migrationu oluþturalým:(Default project:DAL)
+											-	add-migration mig_add_identity
+											-	update-database
+										-Daha sonra SqlServerda bu yeni tablolarý bagladýk.(destination-comment diagramýný buraya taþýdýk.)
+										-Burada kullanýcý ekleme iþlemini manuel olarak gerçekleþtirmeyecegiz çünkü parola için bir hashleme iþlemi yapýlacak bu yüzden controller üstünden gerçekleþtirecegiz.
+										-AspNetRole Tablosuna Admin Ve Member' i ekledik.
+
+
+								-Register ve login iþlemleri için Templati VS 'ye ekledik.
+									1)Login iþlemleri için ilk olarak controlller oluþturalým(logincontroller):
+										-SignUp'ýn view'ýna Register sayfasýnýn indexini attýk.Bu sayfayý revize edelim.
+										-SignIn'in  view'ýna Login sayfasýnýn indexini attýk.SAyfayý revize edelim.
+
+									2)Register iþlemleri için ilk olarak Startup class'ýna gidiyoruz.Burada yapmamýz gereken bazý configurasyonlar var.
+										-SignUp actionun parametre vermemiz gerekiyor.parametreyi bir model üstünden verelim.(direk AppUser olarak da verebilirdik.)
+											-Models'e yeni bir class ekleyelim.(UserRegisterViewModel)
+											-UserRegisterViewModel'de kullanýcýyý sisteme authotantice yapmak istiyoruz.Öncelikle proplarý tanýmlayalým sadece belirli alanlarý girecegiz.
+											-Daha sonra bu sýnýfý SignUp'a parametre olarak verelim.burada atama iþlemleri için gerekli kodlarý yazdýktan sonra signup view'e gidelim:
+												-Burada form "Action" u silelim.bunun yerine method yazýp post oldugunu belirtelim.
+												-Ayrýca buradaki inputlarýn name'lerine atama yapmamýz gerekecek.
+
+
+								-SignUp kýsmýný tamamen sildik temanýn span kýsýmlarý istedigimiz gibi olmadýgý için yeni tema dosyasý eklendi.(web)
+									Yeni temamýzda HtmlHelper yerine TakeHelper kullanalým.Bunun içinde  ViewImport doysamýza gidelim @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers ekleyelim.
+									-Validasyon etiketlerini inputlara eklememiz için bizim bir html etiketine ihtiyacýmýz var.(asp-for///asp-validation-for
+
+									-þifre kýsýtlamalara uygun olmadýgý zaman bir alert vermiyor öncelikle bu sorunu çözelim.
+										-asp-validation-summary="ModelOnly" bu komut ile passwordun kýsýtlamalarýný ekrana yazdýrabiliriz fakat bu ingilizce olacak.bunu türkçeleþtirmemiz gerek
+											-bu iþlem için bir models oluþturalým.(CustomIdentityValidator)-kýsýtlamalarý türkçeleþtirelim.
+												-burada hata oluþmamasý için startup sýnýfýna gidip gerekli düzenlemeyi yapýyoruz.(eklenen kýsým AddErrorDescriber ve sonrasý)
+													****services.AddIdentity<AppUser, AppRole>().AddEntityFrameworkStores<Context>().AddErrorDescriber<CustomIdentityValidator>().AddEntityFrameworkStores<Context>();
+
+								-SignIn sayfasýna geçmeden önce kullanýcýlar için küçük bir userdashboard hazýrlamamýz gerekiyor.
+									Temamýzý ekledik(soft-ui-dashboard)
+										-pagas:tables sayfasýný çalýþtýralým.
+								_UserLayout oluþturma:
+									-Öncelikle bu template'i düzenlemek için bizim bir Layouta ihtiyacýmýz var(Views/Shared-add view)
+										-tables sayfasýný _UserLayout sayfamýza kopyaladýk.(sonuna RenderBody() ekledik.)
+									-_UserLayout'u revize edelim.
+										-Authors Table kýsýmlarýný sildik.(Renderbody'i burada çaðýrdýk.)
+									-Bu layoutu partiallara ayýralým.
+										-UI/Views- add folder (MemberLayoutPartial)
+											-Burada kodu parça parça viewlara bölelim.
+
+							-Areas:
+									-Burada sistemimize kayýt olan kiþilerin MVC iþlemlerini ayrý bir alanda tutacagýz.Yani aslýnda UI katmanýný parçalamýþ olduk.
+									-Dashboard için Areas kullanacagýz bü yüzden UI katmanýna Areas folder açtýk 
+									
+								-Member paneli iþlemleri
+									-new area diyerek kullanýcýlar için Member Area'sýný oluþturduk.
+									-scaffolding'in içersindeki endpoints'i startup'a eklememiz gerekiyor.
+
+									-Member areasýnýn içine yeni bir controller ekleyelim:
+										1)CommentController
+											-Burada kullanýcýnýn kendi yaptýgý yorumlarý gösterecegiz.
+											-Index View oluþturduk(_UserLayout kullandý.)
+												-bu sayfayý çalýþtýrdýgýmýzda hata verecek çünkü bizim CommentController'ý Area olarak tanýmlamamýz gerekiyor. ( [Area("Member")] )
+												-Index sayfamýzda Tables kýsmýnda Turlarý listeleyelim.Bunun için yeni bir controller daha ekleyecegiz.(Destination)
+												
+										2)ProfileController
+										3)MessageController
+										4)DestinationController
+											-Veritabaný baðlantýsý için nesnemizi ürettik.
+											-index'e view ekledik.(UserLayoutu kullandýk.)
+
+
+								-Þimdi SignIn sayfamýza bakabiliriz.
+									-Burada sisteme authentic olmayý deneyecegiz.
+									-Giriþ yapma iþleminin controlünü  models üzerinden sýnýf oluþturarak saðlayalým.(UserSignInViewModel.cs)
+									-	<input class="input100" type="text" asp-for="username" placeholder="Email">
+										<span asp-validation-for="username"></span>			***signinsayfasýnda inputlarý düzenledil(takehelper)
+									-LoginControllerda SignIn metodunun içini doldurduk.
+									-Þimdi Login iþlemi sonrasýnda Profile sayfasýna yönlendirecegiz.Gönderdigimiz profiles sayfasýnda verileri güncellemek için hazýrlýk yapacagýz.
+										-ProfileController'a index view ekleyerek baþlayalým.(UserLayout)
+											-Viewi düzenlemek için ilk önce bir models oluþturmalýyýz.(member:models:add-class/UserEditViewModel)
+											-Takehelper komutlarýný kullanmak için UI-View içindeki ViewImports dosyasýný Member içerisindeki Viewse atalým.
+											-Atama iþlemleri için Tekrar ProfileController'a gelelim.
+											-Ýþlemler sonrasý giriþ yapmayý denedigimizde hata alacagýz çünkü bir route ayarý lazým.
+												-ProfileController a geldik   [Area("Member")]  ve   [Route("Member/[controller]/[action]")] ekledik.
+											-böylelikle profile sayfamýza verilerimizi çektik.
+
+										-Þimdi profile sayfamýzda veri güncelleme iþlemlerini yapalým.
+											-ProfileController'da bir post attr ihtiyacýmýz var.
+											-Burada kullanýcýdan bir resim alacagýmýz için wwwroot'a bir klasör ekleyelim(userimages)
+											-Post attr metodunu dolduralým.
+											-Index dosyamýzda form a özellik olarak resim yüklemek için enctype="multipart/form-data" ekleyelim.
+											-Bu iþlemler sonucunda kullanýcýnýn profil bilgilerini güncelleme sayfasýnýda tamamlamýþ olduk.
+										
+										-Þimdi rezervasyon sayfasýný tasarlayalým:
+											-Ýlk olarak Sql'de manuel olarak bir Rezervasyon oluþturalým.
+												-Bu iþlem için bizim bir Rezervasyon tablosuna ihtiyacýmýz var þu adýmlarý uygulayalým:
+													1)Entity:concrete:add:class //Reservation.cs
+														-Bu sýnýfý AppUser sýnýfý ile iliþkilendirdik.
+														-bu iþlemden sonra veritabaný güncellemesi yapmamýz için :
+															-Dal/concrete/context db set ekledik.
+													2)Areas-Member tarafýnda Controller oluþturmalýyýz(ReservationController)
+														-Bu controllerýn Area bilgisini     [Area("Member")] ekledik.
+
+														-Reservazyon iþlemleri için  metotlar tanýmladýk.
+														-HttpGet metodu için:
+															-View oluþturduk(UserLayout)
+															-Burada rezervasyon oluþtururken destination bilgisini dropdowndan alacagýz.bu veriye göre iþlem gerçekleþtirecegiz.bunun için destmanag nesnesi ürettik.
+															-metodun içini doldurduktan sonra view sayfasýna model ekledik.
+														-HttpPost Ekleme iþlemi için:
+															-bizim öncelikle reservationManager sýnýfýna ihtiyacýmýz olacak.
+															-Dal-Abstract-add new item: interface IReservationDal ekledik.
+															-Entityframework'e class olarak ekleyleim.
+															-Business katmanýnda Abstract-new item interface:IReservationService.Daha sonra Concrete tarafýnda manager class ekleyecegiz.
+															-Daha sonra newreservation viewinin içini doldurduk.
+														-MyCurrentReservation sayfasýný tasarlayalým:
+															--View oluþturduk(UserLayout)
+															--burada aktif rezervasyonlarý getirecegiz ama bir koþula göre bu iþlemi yapacagýz.
+
+
+														-MyOldReservation sayfasýný tasarlayalým:
+															--View oluþturduk(UserLayout)
+															-Burada Reservation tablosuna göre iþlem gerçekleþtirecegiz.
+															-Þöyle bir sorgu cümlesine ihtiyacýmýz olacak.(Select * From Reservations where AppUserId=@p1 and Status="Ýþlem Yapýldý")
+
+														-MyApprovalReservation sayfasýný tasarlayalým:
+															-Bu sayfada onay bekleyen rezervasyonlarý görüntüleyecegiz.
+															--View oluþturduk(UserLayout)
+															-onay bekelyen rezervasyonlar için sisteme giren kullanýcýlarýn bilgilerini çaðýrmamýz gerekiyor.
+																-private readonly UserManager<AppUser> _userManager; reservationcontroller'a ekledik.
+															-Burada Reservation tablosuna göre iþlem gerçekleþtirecegiz.
+																-Bunun için öncelikle DAL-Abstract-IGenericDal :Burada tanýmladýgýmýz þartlý arama metodunu Business katmanýnda Abstracttaki IGenericServicete'de çaðýralým.
+																-Burada metodu tanýmladýktan sonra Business:Concrete tarafýnda hepsinde hata verecek.hepsine implement interface dememiz gerekecek.
+																	-Bu iþlem yerine IReservationService kýsmýnda GetListApprovalReservation böyle bir metot tanýmladýk.
+																	-Bu iþlemden sonra RevervationManager da hata verecek.Ýmplent edelim.ve metodu oluþturalým.(return _reservationDal.GetListByFilter(x=>x.AppUser.Id == id);)
+																	-Daha sonra controllerda  bir ctor oluþturmamýz gerekiyor.(sadece usermanager için)
+																	-Daha sonra controllerda metodumuzun içine:  reservationManager.GetListApprovalReservation(values.Id);
+																	-Burada sadece onay bekleyen iþlemleri getirmek için GetListApproval metodumuzun tanýmýna gidelim.(revervationmanager'a bir þart daha ekleyecegiz.)
+																	
+																	-Onay bekleyen,Onaylanan,geçmiþ rezervasyonlarý id göre  listelemek için:
+																		-DAl/Abstract/IreservationDal metotlarýmýzý tanýmlayalým.
+																		-Bu iþlemin ardýndan Entityframework/EfreservationDal'a gidip implement yapmalýyýz.Daha sonra bu metotlarýn içini doldurmalýyýz.
+																		-Fakat Destination tablosuyla Reservation tablosunun iliþkili olmasý gerekiyor.bunun için Entitylayer katmanýnda bu iki sýnýfý iliþkilendirelim.
+																		-Burada iliþkilendirme iþlemi yaptýktan sonra veritabanýný migration ile güncelleme çalýþtýgýmýzda hata verecek.
+																			-öncelikle reservation sayfasýný truncate etmeyi deneyelim.(sorun çözüldü.)
+																			-sql query:
+																				-truncate table reservations 
+																		-iþlemler sonucunda artýk destination tablosundan þehir ismini çekebiliriz.
+																			-Burada bir hata dönecek.eðer destination.city'i çaðýrmak istiyorsan buna özel metot tanýmlamalýsýn ve include ile dahil etmelisin.Bunuda EfReservationDal'ýn içerisinde tanýmlayacagýz.
+																			-Daha sonra bu tanýmladýgýmýz metodu business tarafýnda çaðýrmamýz gerekiyor.
+																				-Business/Abstract/IReservationService içine tanýmlayalým ve eski metodu silelim.daha sonra reservation manager içine gelip eski metodu kaldýrýp implement edelim.
+																			-Daha sonra bunu Uý tarafýnda çaðýrmamýz gerekiyor.Areas/Member/Controller/Reservationcontroller eski metodun adýný yeni metotla güncelledik(GetListWithReservationByWaitApproval)
+																			-Bu iþlemler sonucunda destination.city olarak çaðýrabildik.
+
+																		-Geçmiþ Rezervasyonlar ve Onanylanan içinde ayný iþlemleri uygulayacagýz.
+																			-Efreservationdal içinde Approval metodunu Previous ve Accepted'ýn  içine kopyaladýk,düzenledik.
+																			-Daha sonra bunlarý Ireservationservice te çaðýrmamýz gerekiyor.
+																			-Ardýndan Reservationmanager ad implement interface yapacagýz.içlerini doldurduk.
+
+																		-Daha sonra myoldreser-mycurrreser sayfalýrýnýn viewini oluþturduk.(myapproval sayfasý ile ayný)
+																			-Controller kýsmýnda bu metotlarýn içini dolduralým.
+
+											
+											-Þimdi dashboard'daki profile sayfamýzý düzenleyelim.
+												-SoftUi/pages/profile.html
+
+												-Ares/member/controller -new controller(Dashboard)
+													-Öncelikle hangi area'a ait oldugunu belirtelim.
+													-Ýndex sayfasýnýn viewini oluþturalým.(userlayout)
+													-Bu viewi profile html sayfasýndan alacagýz.indeximize gerekli kýsmý kopyaladýktan sonra düzenleyelim.
+													-Bu sayfada ilk olarak sisteme giren kullanýcýnýn profilcard'a isim bilgisini getirelim.
+
+														-þimdi bu kýsýmda sisteme giren kullanýcýnýn bilgilerini almak için:
+															-Area/Member/Controller/profilecontroller içindeki usermanager tanýmalama kýsmýný controllera çekelim.
+															-daha sonra burada atama iþlemi için kullandýgýmýz kodlarýda metotun içine çekelim.
+															-bilgileri username üstünden taþýyacagýmýz için bir viewbag oluþturduk ve indexte bunu çaðýrcaz.
+															-daha sonra kullanýcýnýn fotoðrafýnýn gelmesi için controllerda image atamasýný yapalým ve indexe link olarak verelim.
+
+														-ProfileCard'ýn sag tarafýný düzeneleyelim.
+
+
+														-Profile ýnformation kýsmýný düzenleyelim.
+															-Bunun için ViewComponent/ add-folder(MemberDashboard)
+															-buraya bir class ekleyelim.(_ProfileInformation) içerisine invoke metodumuzu ekledik.
+															-Sonra Views/Shared/Components/add folder (_ProfileInformation) içerisinde çaðýrmamýz gerekecek.
+															-bunun içerisine add-view (partial view)
+																-bu viewin içerisine index tarafýndaki profileinformation kýsmýný taþýdýk.
+																-buradaki bilgileri çekmek için viewbagler kullancagýz.profileinformation.cs de (usermanager dan appuser ý çaðýrdýk)
+																-bu iþlemlerden sonra bir hata alacagýz.Invoke metodu geriye bir task döndürmez.Metodun adýný InvokeAsync yaptýk.
+
+														-Conversations kýsmýný tur rehberlerimiz olarak düzenleyecegiz.
+															-bu iþlem için bir partial tanýmalayalým.
+															-Viewcomponents/MemberDashboard/ add-class (_GuideList)
+																-Bu sayfada guidemanager kullanmak için bir manager oluþturalým.
+																	-Business/Concrete/ add-class(GuideManagerr)
+																	-bu iþlemler sonucunda ýnvoke metodumuzun içini doldurduk.
+															-Sonra Views/Shared/Components/add folder (_GuideList) içerisinde çaðýrmamýz gerekecek.
+															-bunun içerisine add-view (partial view)
+																-bu viewin içerisine index tarafýndaki Conversations(Tur rehberlimiz) kýsmýný taþýdýk.
+																-Veritabanýna 5 rehber ekleyelim ve bunlarý çaðýralým.
+
+														-PlatformSettings kýsmýný düzenleyelim.baþlangýç olarak statik oluþturalým daha sonra dinamiðe çekecegiz.
+															-Viewcomponents/MemberDashboard/ add-class (_PlatformSetting)
+															-ýnvoke metodumuzu tanýmladýk.
+															-Sonra Views/Shared/Components/add folder (_PlatformSetting) içerisinde çaðýrmamýz gerekecek.
+															-bunun içerisine add-view (partial view)
+																-bu viewin içerisine index tarafýndaki PlatformSetting kýsmýný taþýdýk.
+
+
+											-Þimdi kullancý panelinin sol tarafýndaki menüyü düzenleyelim.
+												-Views/Memberlayoutpartial/navbarpartial
+												-profilim kýsmý ile dashboard kýsmý ayný þeyi tutacagýndan profilim kýsmýný sadece þifre deðiþtirme iþlemleri için kullanabiliriz.
+													-Area/Member/Controller/profilecontroller ufak düzenlemeler yaptým.daha sonra döneceðim.
+
+
+
+								-Admin paneli iþlemlerine baþlayabiliriz.
+									-Tema dosyamýz sneati wwwroota taþýdýk.
+
+									-Ýlk olarak yeni bir layotumuzu oluþturalým.
+										-Views/Shared/ add-view (herhangi bir partial ve layout kullanmayacak.)(_AdminLayout)
+										-Admin layotun içine form-layout-vertical sayfasýný kopyalayalým.
+										-template'in orta kýsmýný tamamen kaldýralým.
+
+										-öncelikle sol menünü türkçeleþtirilmesiyle baþlayalým.
+											-AdminLayoutu  öncelikle partiallara ayýralým.
+												-Ýlk olarak UI/Controller / add-AdminController
+												-controller içinde Layout sayfasýndaki bloklar için partiallar oluþturalým.
+												
+												-ilk olarak partialSidebarý düzenleyerek baþlayalým.Veritabanýndaki classlara göre buraya oluþturabiliriz.
+													-Ýkonlar için:
+
+											
+
+									-Daha sonra Areas klasörümüze yeni bir Area (Admin) ekledik.
+										-Admin tarafýnda yeni bir controller ekleyelim.
+										-Takehelper komutlarýný kullanmak için Member-View içindeki ViewImports dosyasýný Admin içerisindeki Viewse atalým.
+
+
+											1)DestinationController:
+												-area oldugunu bildirelim.
+												-ilk olarak destination'larý listeleyerek baþlayalým.
+												-Admin/DestinationController'a gidelim ve destinationmanageri çaðýralým ve metodun içini dolduralým.
+
+												-Tur rotalarý kýsmýnda CRUD iþlemleri için actionlarý oluþturalým. 											
+													-AddDestination:
+														-Add Razor View/Use AdminLayout.
+														-bu sayfa için memberdaki new reservation sayfasýný kullanabiliriz.
+														-Buradaki crud metotlara go to defination diyerek içlerini dolduralým.
+
+													-DeleteDestination:
+
+													-UpdateDestination
+														-Add Razor View/Use AdminLayout
+														-AddDestination sayfasýnýn içini kopyalayalým.
+														
+
+													View:
+													-index e view ekledik ve layout olarak admin layoutu kullansýn.
+													-scaffoldingteki useendpoint kýsmýný startup.cs in içine atalým.
+													-index view sayfasýna form-layout-vertical sayfasýný kopyalayalým.
+
+
+												******ef baðýmlýlýðýný kaldýralým (service 'e geçelim)
+
+											2)DashboardController:
+												-area oldugunu bildirelim.
+
+
+
+													View:
+													-index e view ekledik ve layout olarak admin layoutu kullansýn.Daha sonra Temanýn indexinden dashboard kýsmýný çektik ve düzenlemeye baþladýk.
+													-Bu sayfa tamamen dinamik olacagý için herþeyi veritabanýndan çekmeliyiz.
+
+													-Bu index sayfasýný partiallara ayýrmak için  ViewComponent içinde Klasör oluþturalým(AdminDashboard).Bu sýnýfýn üzerinde istatistik iþlemlerini gerçekleþtirelim.
+													-Bu sayfadaki cardlarý viewcomponentler üzerinden kullanacagýz.
+														-AdminDashboard'ýn içine classlarýmýzý ekleyelim:
+
+															-_DashboardBanner:Burasý ilk kard kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_DashboardBanner) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _DashboardBanner kýsmýný kesip yapýþtýrdýk.
+
+															-_Card1sStatistic:Burasý saðdaki 2 istatistik kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_Card1sStatistic) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _Card1sStatistic kýsmýný kesip yapýþtýrdýk.
+																		-Bu sayfa tamamen dinamik olacak verileri veritabanýndan çekmemiz gerekecek.
+
+															-_TotalRevenue:Burasý alttaki grafik kýsmý  olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_TotalRevenue) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _TotalRevenue kýsmýný kesip yapýþtýrdýk.
+
+															-_Cards2Statistic:Burasý grafiðin yanýndaki 3 Card kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_Cards2Statistic) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _Cards2Statistic kýsmýný kesip yapýþtýrdýk.
+
+															-_DestinationStatistic:Burasý grafiðin altýndaki ilk istatistik kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_DestinationStatistic) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _DestinationStatistic kýsmýný kesip yapýþtýrdýk.
+
+															-_DestinationStatistic2:Burasý grafiðin altýndaki ikinci istatistik kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_DestinationStatistic2) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _DestinationStatistic2 kýsmýný kesip yapýþtýrdýk.
+
+															-_AdminGuideList:Burasý grafiðin altýndaki üçüncü istatistik kýsmý olacak.
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_AdminGuideList) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _AdminGuideList kýsmýný kesip yapýþtýrdýk.
+
+															-_AdminDashboardHeader:
+																-Invoke metodumuzu tanýmlayalým.
+																-Daha sonra Views/Shared/Components/Add folder (_AdminDashboardHeader) burada tanýmlamamýz gerekiyor.
+																	-Buraya bir Razor view ekleyeegiz.(partial name:default)
+																		-bu sayfaya dashboard'ýn indexinden _AdminDashboardHeader kýsmýný kesip yapýþtýrdýk.
+															
+
+
+															
+											3)CommentController:
+												-area oldugunu bildirelim.
+												-ilk olarak comment'leri listeleyerek baþlayalým.
+												-Admin/CommentController'a gidelim ve commentmanageri çaðýralým ve metodun içini dolduralým.
+												-TGetList metoduna gidip içini dolduralým
+
+													View:
+													-index e view ekledik ve layout olarak admin layoutu kullansýn.
+													-Burada yorumlarý listelemek istedigim için using el concrete and model list comment
+													-Burada Destination.city ' e eriþmek istedigimizde hata verecek.Bunu çözmek için:
+														-DAL/Abstract/ICommentDal'da Ef de tanýmlayacagýmýz metodun imzasýný atmamýz gerekiyor.
+														-DAL/EntityFramework/EfCommentDal Burada bir metot tanýmlayacagýz.
+														-Bu iþlemleri yaptýktan sonra bu metodu business katmanýndada çaðýrmam gerekiyor.
+															-BusinessLayer/Abstract/ICommentService'te bu metodu tanýmlayalým.(List<Comment> TGetListCommentWithDestination();)
+															-BusinessLayer/Concrete/CommentManager'da bu metodu çaðýrcaz.(return _commentDal.GetListCommentWithDestination();)
+														-Bu iþlemlerden sonra artýk CommentController'ýn indexinin içinde TGetList yerine TGetListCommentWithDestination metodunu kullan diyecegiz.
+
+													-Yorumlarý silme iþlemi için:
+														-BusinessLayer/Concrete/CommentManager e gidip Delete metodunun içini dolduralým.
+														-GetById metodunu da dolduralým.
+														-Silme iþlemi için controllerda bir post metodu tanýmlayalým.
+														-daha sonra view sayfasýnda sil butonuna linki verelim.
+
+												-Tüm controllerlarda classlarda ef baðýmlýlýðýmýz bulunuyordu bundan kurtulmak için :
+
+													-eski hali:
+														-    public class CommentController : Controller
+															{
+																//yorumlarý listelemek için:
+																CommentManager commentManager = new CommentManager(new EfCommentDal());
+																public IActionResult Index()
+																{
+																	var values=commentManager.TGetListCommentWithDestination();
+																	return View(values);
+																}
+															}
+
+														-yeni hali:
+															-Burada bir commentservice üretelim.
+															-commentservice'e atama yapmak için ctor'a ihtiyacýmýz var.Class a týklayýp generate ctor dedik.
+
+															-public class CommentController : Controller
+															{
+																//yorumlarý listelemek için(new ef bagýmlýlýgýndan kurtulduk.):
+																private readonly ICommentService _commentService;
+
+																public CommentController(ICommentService commentService)
+																{
+																	_commentService = commentService;
+																}
+
+																public IActionResult Index()
+																{
+																	var values = _commentService.TGetListCommentWithDestination();
+																	return View(values);
+																}
+															}
+
+															****Bu iþlemden sonra bir hata dönecek.Hata:Eðer ctor kullanarak Servicelere eriþeceksen Startup tarafýnda configure etmen gerekiyor.
+																-Startup.cs dosyamýza gidelim-ConfigureServices içine metodu ekleyelim.
+																	-1)services.AddScoped<ICommentService, CommentManager>(); komutunu ekledik.(ikinci parametre metodun nerede tanýmlandýgýdýr.)
+																	-2)services.AddScoped<ICommentDal,EfCommentDal>(); komutunu ekledik.(ilk olarak interfacei(imzayý),daha sonra imzanýn içinin doldugu kýsým)
+																
+																
+
+															
+											3)UserController:
+												-area oldugunu bildirelim.
+												-Burada kullanýcý listesini listelemek için:
+													-DAl/Abstract/ add-interface:IAppUserDal miras IGenericDal<AppUser>
+													-Dal/EntityFramework/add-class: EfAppUserDal  miras GenericRepository<AppUser>,IAppUserDal
+													-BL/Abstract/add-interface:IAppUserService miras IGenericService<AppUser>
+													-BL/Concrete/add-class:IAppUserManager miras IAppUserService -implement interface daha sonra appuserdal'ý örnekle ve generate ctor.
+														-burada veri listeleme metodunu dolduralým.
+													-sonra Startup tarafýnda configurasyonunu yazalým.
+													-Controllerda Service nesnesini üretip ctoru tanýmlayalým .
+													-silme,düzenleme,yorumlar ve tur geçmiþi  iþlemi için actionlar tanýmlayalým.
+
+													-id 'ye göre rezervasyonlarý getirmek için reservationuser actionunu düzenleyelim.
+														-ilk olarak IReservationService'ten bir service örneklememiz gerekiyor.
+														-eski ctor'un içine IResService ten reservice türetelim.
+														-metodun içini düzenledikten sonra view ekleyelim.(useadminlayout.)
+														-Bu iþlemlerden sonra hata verecek Container içinde reservation için service üretmemiz gerekiyor.
+
+													-id 'ye göre yorumlarý getirmek için commentuser actionunu düzenleyelim.
+														-Burada comment tablosuyla iliþki kurmamýz gerekiyor.
+													
+
+													
+
+
+												-View:
+													-index e view ekledik ve layout olarak admin layoutu kullansýn.
+													-view sayfasýnýn içini dolduralým.(@using EntityLayer.Concrete @model List<AppUser>)
+								
+								
+													{
+														Note:**Startuptaki entity serviceleri refactoring iþlemi uygulayalým.
+																		-Bu iþlem için:
+																		-Bl/add-folder name:Container
+																			-Buranýn içine bir class tanýmlayalým.Startuptaki serviceleri yani extensionlarý buraya çekelim.
+																			-Extensions class'ýný startupda çaðýralým.
+																				-Extensions class'ýný static hale getirerek new extension demekten kurtulabiliriz.
+												
+																	+Note: 404 sayfasýný tasarlayalým:
+																		-simple-404 template'ini wwwroota ekleyelim.
+																		-sayfa ulaþýlmadýgýnda 404 sayfasýna gitmesi için ilk olarak startup tarafýna ekleme yapmamýz gerekiyor.
+																		-UI tarafýnda yeni bir controller oluþturalým(name:ErrorPage)
+																			-Bu controllerýn içinde Error404 isminde bir sayfa oluþturacagýz.
+																			-Bu sayfaya bir razor view ekledik(layout kullanmayacak)
+																				-404.html sayfasýný bu sayfanýn içine kopyalayalým.
+													}
+
+												
+																		
+
+															
+
+											3)MessageController:
+												-Daha sonra yapýlacak.
+
+
+											4)GuideController:
+												-area oldugunu bildirelim.
+												-ilk olarak IGuideService'ten bir service örneklememiz gerekiyor.
+													-class generate ctor
+													-BL/Container içinde rehberler için service üretmemiz gerekiyor.
+												-Daha sonra rehberler için bir view oluþturalým.
+												-Yeni rehber için bir sayfa oluþturalým.
+												-Ekleme metodunun çalýþmasý için Bl/Concrete/GuideManager Tadd metodunu dolduralým
+
+												-ChangeToTrue ve ChangeToFalse için:
+													-Dal/Abstract/IGuideDal içine gerekli metotlarý yazalým.
+													-Dal/EntityFramework/EfGuideDal e gidip implement edelim ve içini dolduralým.
+													-BL/Abstract/IGuideService metotlarý tanýmalaylým.
+													-Bl/Concrete/GuideManager  metotlarý implement edelim ve içini dolduralým.
+													-Son olarak controllerda bunu çaðýralým
+
+
+
+												View:
+													-Index add view razor:view (use adminlayout)
+														-rehberlerimizi listeleyelim.
+														-img dosyalarý için bir style tanýmlayalým.
+													-AddGuide:
+														-Bir validationRules ekleyelim:
+															-BL/ValidationRules/Add-class (name:GuideValidator)
+																-miras aldýrdýk.
+																-generate ctor
+																-bu validasyonu kullanmak için AddGuide actionuna tanýmlayalým.
+																-Daha sonra bu hatalarý view tarafýnda listelememiz lazým(span tagleri)
+
+													
+
+
+														{
+
+															+Note:**Login üzerinde output ekranýnda ve hemde bir dosya üzerinde log kayýtlarý nasýl görüntülenir bunu yapacagýz.
+																		-Startup'a gidelim.
+																			-ConfigureServices metodunun içine tanýmlayalým.
+																			-Loglama iþleminin nerelerde kullanýlacaðý bilgisini düzenlemek için
+																				-UI/Controller/HomeController içerisinde.Bu sayfada atamalarýmýzý yapalým.
+																				-Buradaki temel amacýmýz hatalarýn log kayýtlarýný dosya üzerinde tutup admin sayfasýnda kontrolunu saglamak.
+																					-Bu iþlem için UI/manage nuget/add-Serilog.Extensions.Logging.File
+																						-Startup tarafýnda bunu çaðýrmamýz gerekiyor.
+																							-Burada Configure metodunun içine ,ILoggerFactory interface verip loggerFactory deðeri örnekledik.
+																								-Daha sonra metot içinde tanýmlamamýzý yapalým.(bu iþlemden sonra log kayýtlarýný Logs dosyasýnda tutuyoruz.)
+														}
+
+											
+								
+								
+														{
+									
+
+															+Note:**Excel Rapolarý(Dosya iþlemleri):
+																		-UI/manage nuget/-add EPPlus :excel için gerekli olan paket
+																		-ilk önce statik bir excel dosyasý oluþturacagýz daha sonra bunu dinamiðe çevirecegiz.
+																		-UI/Controller/add-(excelcontroller):
+																			-controllerin içini doldurduk.
+																			-add view:razorview:use admin layout
+
+																			-Bu sayfayý dinamik hale getirmek için:
+																				-Models/add class-(DestinationModel)
+																				-DestinationModel'de Destination tablosundaki kullanmak istediklerimi oluþturdum.(prop)
+																				-ardýndan controllerda bir liste tanýmlayalým.
+																				-böylelikle statik ve dinamik olarak excel sayfasý yaptýk.
+
+															+Note:**Pdf Raporlarý:
+																		-UI/manage nuget/-add iTextSharp.LGPLv2.Core :pdf için gerekli olan paket
+
+																		-UI/Controller/add-(PdfReportcontroller):
+																			-controllerin içini doldurduk.
+																			-add view:razorview:use admin layout
+
+															-Excel ve pdf controllerda yazdýmýgýmýz komutlarý mimarinin içine Business katmanýna çekelim.
+																1)Excek için:
+																-BL/Abstract/-add interface: (name:IExcelService)
+																-Bl/Concrete/-add class:(ExcelManager)
+																-BL/manage nuget :epplus
+																-Excel controllerdaki StaticExcelReport metodunun içini silelim.
+																	-Excel controller'ýn service baðlantýsýný yapalým.Daha sonra bu service'in Container içinde çaðrýlmasý gerekiyor.
+																	-StaticExcelReport metodunun içini doldurduk.
+
+
+															-Bu raporlar için Admin panelinde Menü ekleyelim.
+																-Views/Admin/Sidebar
+														}
+											
+												
+													
+											5)MailController
+												-area oldugunu bildirelim.
+
+												-Burada mail gönderme iþlemi için parametreyi model üstünden gönderelim.
+													-UI/Models/add-class (MailRequest)
+													-Ardýndan controllerda metodumuza parametre olarak verelim.
+												-Daha sonra UI/manage nuget :MailKit paketini kuralým.
+													-post metodunun içini dolduralým.
+
+
+
+												View:
+													-Index add view razor:view (use adminlayout)
+													-@model TravelerCoreProject.Models.MailRequest .Sayfamýzý düzenledik.
+
+
+
+
+													{
+														AJAX Ýþlemleri:
+															Þehir bilgilerini getirmeye çalýþalým.
+															
+															1)CityController:
+															 -Areas/Admin/Controller:add-controleler(CityController)
+															 -Daha sonra UI/Models/add-class
+															 -verileri dinamik olarak almak için service oluþturalým.
+																-BL/Container da tanýmlama yapalým.(zaten tanýmlý)
+
+
+
+															 View:
+																-Index/add razor view(use adminlayout)
+													
+													
+													
+													}
+
+
+
+								****DTO(Data Transfer Object) katmaný:
+									-neden ihtiyaç duyarýz:
+										-proje içerisindeki modelleri aslýnda bir takým iþlemleri gerçekleþtirmek için yapmýþtýk.Proje büyüdükçe models üzerinden yönetmek zorlaþacak.Bunun için dto bize iyileþtirme saðlýyor.
+										-Buradaki temel amacýmýz Models klasörü üzerinde deðilde DTO katmanýnda çalýþmak.
+									-Solution/Add-Project (Library class) -name:DTOLayer
+										-Bu katmanda classlar direkt deðil bir klasör aracýlýgý ile eklenir.(DTOs)
+										-Ardýndan Her bir Entity için DTO tanýmlayacagýz.
+											1-DTOs/Add-folder (CityDTOs)
+												-Add--class (CityAddDTO)
+													-Models içindeki CityClass'taki propertileri buraya taþýdýk.
+																	public int CityID { get; set; }
+																	public string CityName { get; set; }
+																	public string CityCountry { get; set; }
+											2-DTOs/Add-folder (DestinationDTOs)
+												-Add--class (DestinationAddDTOs)
+													-Models içindeki DestinationModel'deki propertileri buraya taþýdýk.
+																	public string City { get; set; }
+																	public string DayNight { get; set; }
+																	public double Price { get; set; }
+																	public int Capacity { get; set; }
+											3-DTOs/Add-folder (MailDTOs)
+												-Add--class (MailRequestDTOs)
+													-Models içindeki DestinationModel'deki propertileri buraya taþýdýk.
+																	public string Name { get; set; }
+																	public string SenderMail { get; set; }
+																	public string ReceiverMail { get; set; }
+																	public string Subject { get; set; }
+																	public string Body { get; set; }
+											4-DTOs/Add-folder (AppUserDTOs)
+												-Add--class (AppUserRegisterDTOs)
+													-Models içindeki UserRegisterViewModel'deki propertileri buraya taþýdýk.
+													-Bu kýsýmda Data Annotationlar yer almayacak bunlarý fluentvalidation aracýlýgý ile çaðýracagýz.(required ve compare kýsýmlarý kaldýrdýk)
+																	[Required(ErrorMessage ="Lütfen adýnýzý giriniz")]
+																	public string Name { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen soyadýnýzý giriniz")]
+																	public string Surname { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen kullanýcý adýnýzý giriniz")]
+																	public string Username { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen mail adresinizi giriniz")]
+																	public string Mail { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen þifrenizi giriniz")]
+																	public string Password { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen þifreyi tekrar giriniz")]
+																	[Compare("Password",ErrorMessage ="Þifreler uyuþmamaktadýr!")]
+																	public string ConfirmPassword { get; set; }
+												-Add--class (AppUserLoginDTOs)
+													-Bu kýsýmda Data Annotationlar yer almayacak bunlarý fluentvalidation aracýlýgý ile çaðýracagýz.(required ve compare kýsýmlarý kaldýrdýk)
+																	[Required(ErrorMessage ="Lütfen kullanýcý adýný giriniz!")]
+																	public string username { get; set; }
+
+																	[Required(ErrorMessage = "Lütfen þifrenizi giriniz!")]
+																	public string password { get; set; }
+
+
+												-Ýþlemler sonrasýnda DTO'yu Business Katmanýyla iliþkilendirmemiz gerekiyor.
+													-BusinessLayer/Add-project reference dedik ve DTO katmanýný seçtik.
+
+													-Bl/ValidationRules kýsmýnda her bir iþlem için validator yazacagýz.(add class)
+
+														1)AppUserRegisterValidator:
+															-içerisine validasyon kurallarýný yazdýk.
+
+
+
+												-Auto Mapper:(Note:***Mapleme iþlemi yapýlýrken Prop adlarý mutlaka veritabaný ile ayný isimde olmalýdýr.)
+													-Farklý tipteki objeleri birbirine baðlar.
+													-Ýlk olarak Admin tarafýnda bir Duyuru oluþturalým :
+														-Entity Layer/Concrete/add class(Announcement)
+														-DAL/Concrete/Context'te veritabanýna yansýtalým.
+														-Daha sonra migration üstünden DB'ye yansýtalým.
+														-Dal/Abstract/add interface:(IAnnouncementDal)
+														-Dal/EntityFramework/add class(EfAnnouncementDal)
+														-Bl/Abstract/add interface:(IAnnouncementService)
+														-Bl/Container/Extension içide service'i tanýmlayalým.
+														-Bl/Concrete/add class:(AnnouncementManager) daha sonra miras aldýrdýk ve implement ettik.
+														-Areas/Admin/Controller/add-controller(Announcement)
+															-Ekleme iþleminde kýsýtlamalar yapacagýz onun için hemen DTO ya taþýyalým.
+															-DTOLayer/DTOs/add folder(AnnouncementDTOs)
+																-ardýndan için class ekleyelim (AnnouncementAddDto)
+																-EntityLayer içindeki Announcement.cs 'den Title ve Content'i alalým
+																-Daha sonra BL'a gidip validator tanýmlayalým.Burada þartlarý yazalým.
+														-Þimdi sýrada Auto Mapper'ýn projeye eklenmesi var:
+															-UI/manage nuget-AutoMapper.Extensions.Microsoft.DependencyInjection
+															-Daha sonra UI/add folder(mapping)
+																-Mapping'in içine bir folder daha ekleyelim(AutoMapperProfile)
+																	-Add class(MapProfile)
+																		-Map'leyecegimiz profil bilgilerini buraya girecegiz.
+																		-DTO larý modeller ile baðlamak için CreatMap metodu ile komutlarý yazdýk.
+															-Ýþlemler sonrasýnda Startup.cs 'e automapper'ý dahil etmemiz gerekiyor.
+
+														-Areas/Admin/Models/add-class:(AnnouncementListViewModel)
+															-Listeleme yapmak için burada bir class oluþturalým
+															-Burada CQRS benzeri bir yapý kullanýyoruz.Amacýmýz bütün deðerleri görmeye gerek yok sadece Ýhtiyacýmýz olan degerleri Db'de görsek yeterli.
+															-Burada getirmek istedigimiz degerler(Id-Title-Content) proplarý tanýmladýk.
+															-Daha sonra Controllerda listeleme metodunun içini doldurduk ve Indexe View ekledik.
+															-Burada yapmamýz gereken verilere model üzerinden eriþmek degilde DTO üzerinden verilere eriþmek.
+																-DTO katmanýný controller'a çekmeliyiz.(Imapper atamasý yaptýktan sonra ctrl . Add parameters to anno....Service)
+																-listeleme metodunu DTO ile kullanmak için yeni bir DTO sýnýfý oluþturalým.(AnnouncementListDto)
+																-Ardýndan AnnouncementListViewModel içerisindeki proplarý buraya kopyaladýk.
+																-Artýk model yerine verileri AnnouncementListDto 'dan çekecegiz. gerekli kodlarý metodun içine yazdýk.
+																-Daha sonra Mapping içindeki MapProfile'a Baðlama iþlemini yapalým.
+																-Sonrasýnda Startup içerisinde tanýmlamasýný yapalým.
+
+														-Announcement'in ekleme iþlemi için:
+															-Controller Da metodun içini doldurduk.
+															-Daha sonra Viewini oluþturalým.
+														-Announcement'in silme iþlemi için:
+															-Controllerda metodu tanýmladýk.
+														-Announcement'in güncelleme iþlemi için:
+															-Güncelleme iþlemi için Bizim bir DTO'a ihtiyacýmýz var.
+															-DTO katmanýnda DTO tanýmlayalým.
+															-Controllerda metodu oluþturduktan sonra mapleme iþlemi yapmamýz gerekecek.
+															-sonrasýnda Validator oluþtrulaým.
+
+
+
+
+
+															View:
+																-tabloyu oluþturduk.
+																-Burada yapmamýz gereken model üzerinden eriþmek degilde DTO üzerinden verilere eriþmek.
+
+
+
+						**Contact sayfasýnda bize yazýn diye bir kýsým var ve burasý SQL de mevcut deðil burayý hazýrlaylým.
+							-Ýlk olarak EL/Concrete/add-class(ContactUs)
+							-Dal/Concrete/Context sýnýfýna ContactUs sýnýfýný dahil edelim.
+							-daha sonra package manager default project:Dal
+								-add-migration mig_create_contact_us and update-database
+							-Daha sonra /Areas/Admin/Controller-add (ContactUs)
+							-Dal/Abstract/add interface:(IContactUsDal)
+							-Dal/EntityFramework/add class(EfContactUsDal)
+							-Bl/Abstract/add interface:(IContactUsService)
+							-Bl/Concrete/add class:(ContactUsManager) daha sonra miras aldýrdýk ve implement ettik.
+							-daha sonra class . generate ctor
+							-daha sonra container içerisinde extensionda service'i tanýmlayalým.
+							-Ýþlemlerden sonra controller'a gelip service örnekleyip ctor ürettik
+
+								View:
+									-Index/add razor view(use adminlayout)
+									
+								-Silme iþlemi için aktif pasif yap gibi düþünebiliriz.Mesajlarý veritabanýndan silmek istemeyiz.
+									-EntityLayer/ContactUs prop (MessageStatus) ekleyelim.
+									
+								-Þartlý bir listeleme yazalým:
+									-Dal/Abstract/IContactUsDal'ýn içine tanýmlayalým.
+									-Dal/EntityFramework/EfContactUsDal 'ta implement edelim ve içini dolduralým.
+									-Bl/Abstract/IContactUsService 'e gidip IContactUsDal 'daki metotlarý burayada yazalým.
+									-Bl/Concrete/ContactUsManager 'da implement interface edip metotlarý dolduralým.
+									-Daha sonra controllerda tgetlist metodu yerine bu yeni tanýmladýgýmýz metotlarý çaðýrcaz.
+
+
+
+
+						#################### Web Api ######################
+
+						-Startup'ý açalým
+						-Web Api baðlantýsýný ekledik.
+						-Daha sonra Admin tarafýnda yeni bir controller tanýmlayalým.
+						-VisitorApiController:
+							-burada api'yi consume edecegiz,tüketecegiz.
+							-deserializeobject'in içinde liste vermem gerekiyor bunun için admin models içinde bir model oluþturalým.(VisitorViewModel)
+								-bu modelin içine api projesindeki Visitor entity'nin içini kopyalayalým.
+
+
+
+
+						-RapidApi:
+							-Ücretsiz veya ücretli olarak içerisinde barýndýrdýgý apileri paylaþan api platformu.
+							-Burada paylaþýlan apiyi projemize entegre edicez ve bunu consume edecegiz.
+
+							-Api'yi görüntülemek için bir controller oluþturduk.
+							-ApiMovieController:
+								-Rapidden aldýgýmýz kodu buraya kopyaladýk.
+								-View sayfasýnda verileri görüntülemek için modele ihtiyacýmýz var.
+								-Admin-Models-ApiMovieViewModel proplarý sitedeki isimle tanýmladýk.
+
+							-ApiExchangeController:
+								-
+
+
+
+
+
+							#################
+							CQRS Design Pattern:
+								-ana odaðý yazma ve okuma sorumluluklarýnýn ayrýþtýrýlmasýna dayanan bir mimari tasarým modelidir.
+								-CQRS ,CQS'e dayanýr.CQS bir metot objenin durumunu deðiþtirmelidir ya da geriye bir sonuç döndermelidir,ancak iki iþlem birden yapmamalýdýr.
+								-Yani ayný metot içerisinde hem listeleme hem ekleme iþlemi olmamalý.
+								-Yoðun sistemlerde okuma (listeleme iþlemi) iþlemini dahada hýzlandýrmak için oluþturulan bir design patterndýr
+
+									Read(okuma iþlemi):
+										-Veritabanýna herhangi bir deðiþiklik yansýtýlmaz
+										-List
+										-GetByParameter:
+									Write:
+										-Veritabanýnda deðiþiklik yapan iþlemlerdir.
+										-Insert
+										-Update
+										-Delete
+
+								-Bu yaklaþýmda metotlar iki farklý modele ayrýlmalýdýr.
+									1)Commands(Create-update-delete):Objenin veya sistemin durumunu deðiþtirir.
+									2)Queries(listeleme iþlemleri):Sadece sonucu geriye döner herhangi bir objenin veya sistemin durumunu deðiþtirmez.
+
+									3)Handlers:Bütün iþlemlerde iþleyici olarak karþýmýza çýkar.Crud iþlemleri buranýn içerisinde gerçekleþiyor olacak.
+									4)Results:Listeleme iþlemlerinin parametrelerini tutan sýnýf .
+
+								-CQRS ne zaman kullanýlmalý?
+									-Birbirinden ayrý sistemlerde olasý bir servisin hata vermesi durumunda bu hatanýn sistemin akýþýna olumsuz yönde etkisi olmuyorsa kullanýlabilir.
+									-Kompleks iþ kurallarýnýn olabilecegi  veya iþ  kurallarýnýn  sýk sýk deðiþtiði yapýlarda kullanýlabilir.
+									-yüksek veri trafiðinin oldugu sistemlerde kullanýlabilir.(bizim için önemli olan kýsým)
+									-Basit CRUD iþlemleri yapýlan sistemlerde kullanýlmaz.
+
+								-Bu yapýyý UI katmaný üzerinde kullanalým.
+									-UI/add folder(CQRS)
+									-CQRS için gerekli yaklaþýmlarý bu klasöre ekledik.
+									-þimdi veritabanýmýzda destination tablomuza gidelim. Burada birçok alan var ve bu alanlar içerisindeki herþeyi herkesin görmesini istemiyorum.
+									-Yani þöyle bir senaryo düþünelim.Bir ürünümüz var çeþitli alanlara sahip.Ve bizim domainlerimiz var Muhasebe domaini ürünün tüm proplarýný görmesine ihtiyaç yok.
+									Yada depo sorumlusu domanini ürünün fiyat bilgisini görmesine gerek yok. vb 
+									-Bizim birçok domainimiz var ve biz listeleme iþlemlerini çok hýzlý bir þekilde gerçekleþtirmek istiyoruz.bu iþlem için listeme ve crud metotlarýný ayný yerde yapmak yerine ayýrarak sistem optimizasyonunu artýrabiliriz.
+									-Destination varlýðý için:
+										-Adminin görecegi kýsýmlar
+										-Üyelerin görecegi kýsýmlar
+										-Üye olmayanlarýn görecegý kýsýmlar gibi rolleyip gruplandýrabiliriz.
+
+									-Projemize uygulayalým.
+										-Adminin görecegi kýsýmlar için:
+										-CQRS ile parametresiz Listeleme yapalým.
+											1)Results/add folder:
+												A)DestinationResults:
+													-Add class:GetAllDestinationQueryResult
+														-proplarý tanýmaladýk.//isimlendirmeler veritabaný ile ayný isimde olmak zorunda deðil.
+													
+
+											2)Queries/add folder:
+												A)DestinationQueries:
+													--Add class:GetAllDestinationQuery
+														-queries sýnýfý gönderecegimiz parametreleri tutar.Þuan herhangi bir parametremiz yok.
+
+											3)Handlers/add folder:
+												A)DestinationHandlers:
+													-Add class:GetAllDestinationQueryHandler
+														-Contexten bir nesne üretelim ve generate ctor
+
+												Ýþlemler sonrasýnda bunu controllerda çaðýrmamýz gerekiyor.
+
+												-Areas/Admin/Controller/add controller(DestinationCQRS)
+													-Burada ctor üzerinden Handleri çaðýrýyoruz.
+													-Controllerda gerekli iþlemleri yaptýktan sonra Startupta geçmemiz gerekiyor.(services.AddScoped<GetAllDestinationQueryHandler>();)
+													-Daha sonra indexe view ekleyelim.
+													-model olarak kullanmak için Admin/Views/ViewImport'a using ekleyelim.
+
+										-Þimdi CQRS ile Parametreli listeleme(id ye göre getir) yapalým.
+											1)Results:
+												A)Results/DestinationResults/add class GetDestinationByIDQueryResult
+
+											2)Queries:
+												A)Queries/DestinationQueries/add class GetDestinationByIDQuery
+													-gönderecegimiz parametreleri burada tanýmlayalým.
+
+											3)Handlers
+												A)Handlers/DestinationHandlers/add class GetDestinationByIDQueryHandler
+													-Contexten bir nesne üretelim ve generate ctor
+
+											Ekle metodu için:
+											4)Commands/Add Folder:
+												A)DestinationCommands:
+													-add class:CreateDestinationCommand
+														-Burasý eklemek istedigimiz prop lari alacak.
+												-Þimdi CQRS ile ekleme iþlemi yapacagýmýzdan yeni bir Handler ekleyelim.
+												-DestinationHandlers a gidelim yeni bir class oluþturalým.
+
+												-model olarak kullanmak için Admin/Views/ViewImport'a using ekleyelim.
+											Silme metodu için:
+											Commands/DestinationCommands:
+												-add class:RemoveDestinationCommand
+													-id ye göre silme yapacagýmýz için id prop ekledik ve generate ctor
+												-Þimdi CQRS ile silme iþlemi yapacagýmýzdan yeni bir Handler ekleyelim.	
+												-DestinationHandlers a gidelim yeni bir class oluþturalým.
+												-controllerda metodu yazalým ve startup ekleyelim.
+											Güncelleme metodu için:
+											Commands/DestinationCommands:
+												-add class:UpdateDestinationCommand
+													-güncellenecek proplarý tanýmladýk.
+												-Þimdi CQRS ile güncelleme iþlemi yapacagýmýzdan yeni bir Handler ekleyelim.	
+												-DestinationHandlers a gidelim yeni bir class oluþturalým.
+												-controllerda metodu yazalým ve startup ekleyelim.
+											-Ýþlemler sonrasýnda bunu controllerda çaðýrmamýz gerekiyor.
+												- var values = _getDestinationByIDQueryHandler.Handle(new GetDestinationByIDQuery(id)); bu kýsýmda hata verecek. getbydestinationbyidquery'e gidip id için ctor üret.
+												--Controllerda gerekli iþlemleri yaptýktan sonra Startupta geçmemiz gerekiyor.(services.AddScoped<GetDestinationByIDQueryHandler>();)
+
+
+
+									###################Mediator kütüphanesi:(guide)
+									-ASlýnda handle'daki yaptýgýmýz tanýmlamalar haberleþtirme iþlemiydi bunu mediator'a taþýyýp controller tarafýnda handler 'larý tanýmlamamýza gerek kalmayacak.
+									-Havaalýnýndaki kule gibi düþünebiliriz.
+									-Areas/Admin/Controller/add controller
+										-GuideMediatRController:
+											-UI/manage nuget:MediatR.Extensions.Microsoft.DependencyInjection
+											-Rehber Bilgilerini getirelim.
+
+										1)CQRS/Results/Add folder:
+											A)GuideResults:
+												-add class:GetAllGuideQueryResult
+
+										2)Queries/add folder:
+												A)GuideQueries:
+													--Add class:GetAllGuideQuery
+
+										3)Handlers/add folder:
+												A)GuideHandlers:
+													-Add class:GetAllGuideQueryHandler
+														-Contexten bir nesne üretelim ve generate ctor
+
+
+										-iþlemler sonrasý mediatR 'ý startupta geçmemiz gerekecek.Tek bir kere tanýmlama yapacagýz.handler gibi ayrý ayrý tanýmlama yapmamýza gerek kalmayacak.
+										-controllera gidelim artýk handler'larý tek tek tanýmlamamýza gerek kalmadý.
+
+											-Þimdi CQRS ile Parametreli listeleme(id ye göre getir güncelleme) yapalým.
+											1)Results:
+												A)Results/GuideResults/add class GetGuideByIDQueryResult
+
+											2)Queries:
+												A)Queries/GuideQueries/add class GetGuideByIDQuery
+													-gönderecegimiz parametreleri burada tanýmlayalým. generate ctor
+
+											3)Handlers
+												A)Handlers/GuideHandlers/add class GetGuideByIDQueryHandler
+													-Contexten bir nesne üretelim ve generate ctor
+													-miras aldýrma ve implement
+
+											Ekle metodu için:
+											4)Commands/Add Folder:
+												A)GuideCommands:
+													-add class:CreateGuideCommand
+														-Burasý eklemek istedigimiz prop lari alacak.
+												-Þimdi CQRS ile ekleme iþlemi yapacagýmýzdan yeni bir Handler ekleyelim.
+												-DestinationHandlers a gidelim yeni bir class oluþturalým.
+
+												-controllerda çaðýrýp metot oluþturalým.
+												-viewimport dahil et.
+
+
+
+
+
+
+
+
+								################# UNIT OF WORK implementasyonu:(Design pattern- 4)
+									-SaveChanges iþlemini ayrý bir sýnýf ve metot üzerinde tutacagýmýz bir yapýsý var.
+									-Bankacýlýk iþlemleri üstünden düþünelim A B ye para gönderiyor.A dan para kesildikten sonra B ye geçmeden sistemin çöktüðünü düþünelim.Para A dan kesildi fakat B ye aktarýlmadý.
+									Bu olay Transection olarak açýklanýr.Unit of Work yapýsý A parayý gönderdikten sonra deðiþiklikleri kaydetmek yerine Bütün iþlemler bittikten sonra deðiþiklikleri kaydeder.Böylece sistem çökse bile iþlem gerçekleþmemiþ olur.
+									-Yani tüm iþlemler bittikten sonra deðiþiklikleri kaydedecegiz.
+									-Projemizde firmanýn tablosu olsun bu tablo Account tablosu olsun birbirlerine para gönderme iþlemi olsun.
+
+									-Entitylayer/Concrete/add class:
+										Adýmlar:
+										1)Account sýnýfýný tanýmladýk proplarý oluþturduk
+
+									-DAL/Concrete/Context
+										-Account sýnýfý Dbset edelim.
+									-Package manager'dan veritabanýný güncelleyelim.
+									-veritabanýnda örnek veri giriþi yapalým.
+
+									-DAL/Abstract/add interface:IGenericUowDal -Unit of Work için ayrý bir generic oluþturalým.
+									-DAL/Abstract/add interface:IAccountDal -IGenericUowDal'dan miras aldýralým.
+									-DAL/Repository/add class:GenericUowRepository
+									-DAL/add folder:UnitOfWork
+										-UnitOfWork:
+											-add interface:IUowDal(Burada Save metodunun imzasýný tanýmladýk.)
+											-add class:UowDal(Burda Save metodunun içini dolduralým.)
+									-DAL/EntityFramework/add class:EfAccountDal
+									-BL/Abstract/add folder:AbstractUOW
+										-Add interface :IAccountService
+										-Add interface:IGenericUowService
+									-BL/Concreteadd folder:ConcreteUOW
+										-Add class :AccountManager(ctor and metotlarýn içini doldurduk.)
+
+									-iþlemler sonrasý Container/extension service tanýmalamsý.
+									-daha sonra Admin tarafýnda AccountController oluþturduk.
+										-Burada bize gerekli olan Gönderici,Alýcý,Tutar.Bunlarý görüntülemem için Account sýnýfý yeterli deðil o yüzden bir models ekleyelim ve bu modeli parametre olarak güncelleme iþlemine verelim.
+										-Burada Ýd ye göre iþlem yapacagýmýz için DAL/Abstract/IGenericUowDal'da id ye göre getirme metodu tanýmlamalýyýz.
+										-Ardýndan GenericRepository'de GenericUowRepository metodunu güncelleyelim.
+										-Business/AbstractUOW IGenericUowService'de metodu ekleyelim.
+										-BL/ConcreteUOW/AccountManager 
+
+
+
+
+
+
+
+
+
+								#####################TASARIM DÜZENLEMELERÝ:
+								Rehblerleri DestinationDetails sayfasýnda göstermek için Bir ViewComponent oluþturalým.(DestinationDetails)
+									-class ekleyelim(_GuideList)
+									-metodumuzu yazalým.
+									-Views/Shared/Components/add folder _GuideDetails
+										-add view (partial view) name:default Gerekli iþlemleri yaptýk DestinationDetails e yönlendirdik.
+
+									-DestinationDetails 'de yorum yapanlarýn bilgilerini  çekmek için:
+										-AppUser tablosu ile Comments tablosunu iliþkilendirmemiz gerekiyor.
+										-bunun için EL/Concrete AppUser ve Comments tablosuna gidip iliþkiyi kuralým.
+										-Daha sonra package manager .
+										-_CommentListe gidip düzenleme yaptýk.
+
+										-DAL/Abstract/Icommentdal burada metodumuzu tanýmlayalým.
+										-DAl/EF/EfCommentDAl'da metotu dolduralým.
+										-BL/Abstract/Icomment service'de metodu tanýmlayalým.
+										-BL/Concrete/Commentmanager 'da metoddu implement edelim ve içini doldurlaým.
+										-_COmmentList'te biz id ye göre getirme iþlemi yapmýþtýk ama bizim rotaya (destination'a ) göre db den veri getirmemiz gerekiyor.Metodu id parametreli yaptýkki destination id sine göre getirebilelim.
+										-Daha sonra Yorum býrakýn kýsmýnda bize sadece yorum gerekiyor ad soyad ve destination id kýsmý arkada gelecek.
+										-CommentController da viewbag çekemiyoruz.Viewbag almak için DestinationControllerda DestinationDetails metodunun içinden geliyor.
+
+
+
+									-DestinationDetails'de yazýyý yazan rehberi görmek için Rehber tablo ile destination tablosu iliþkili olmalý.
+
+
+
+
+									-Site Rehberlerimiz sayfasý için:
+										-Controller/add controler:(guidecontroller)
+											-view için Traversal-Liberty de yer alan landing.single içerisindeki rehberlerimiz kýsmýný alacak.
+
+
+									-Contact(iletiþim sayfasý için):
+										-controller ve view oluþturduk.
+										-DTO ekleyelim.
+											-ContactDTOs/add class
+										-BL/ValidationRules
+										-Mapping iþlemi yapmalýyýz.
+
+
+
+
+								##########################   SignalR    ##################################
+								- Sayfanýn post iþlemi gerçekleþmeden iþlemler gerçekleþtirmemizi saðlar.Client ile Server arasýnda gerçek zamanlý bir baðlantý iþlemi saðlar.
+								-Anlýk olarak mesajlaþmaya buna örnek verebiliriz.
+								-Normalde .Net core'da sayfaya yeni bir veri eklendiðinde sayfanýn post iþleminin gerçekleþmesi gerekiyor.SignalR da veriler sayfa post olmadan karþýmýza çýkar.
+								-SignalR için extra bir kütüphane indirmemize gerek yok kalýtým yoluyla projeye dahil edilebilir.
+									-Bazý metotlarýn çalýþmasý için ClientSide üzerinde ayrýca bir paket kurulumu yapacagýz.
+
+								-Projemizde SignalR ile anlýk olarak Dashboard analizi yapan bir uygulama gerçekleþtiriyor olacagýz.
+									-Hangi þehirden kaç kullanýcý katýlýdýgýný gösterecegiz.
+								-UI katmaný üzerinde çalýþacak.
+
+								-SignalR da bir client bir server'a ihtiyacýmýz olacak.Server'i biz APÝ olarak kullanacagýz.Apideki verileri projenin UI katmaný üzerinde gösteriyor olacagýz.
+
+								1)Solution/Add project
+								2)SignalRApi/Add folder:DAL
+									-add class:(Visitor)
+								3)SignalRAPi/nuget package:
+									-Microsoft.EntityFrameworkCore
+									-Microsoft.EntityFrameworkCore.Design
+									-Microsoft.EntityFrameworkCore.Tools
+									-Npgsql
+									-Npgsql.EntityFrameworkCore.PostgreSQL
+								4)Baðlantý adresimizi yazmamýz gerekiyor.Appsettþngs.json dosyasýna gidelim.
+								5)DAL/add class:
+									-Context:
+										-Veri tabaný iþlemleri için gerekli kodlarý yazdýk.
+								6)Startup.cs
+									-Veritabaný baðlantýsý için gerekli komutu yazdýk ve package managerdan veritabanýna gönderdik.
+
+								7)SignalRApi/add folder:(Model)
+									-add class:VisitorChart
+									-add class:VisitorService -startupta config geçelim.
+
+								  -SignalRApi/add folder:(Hubs)
+									-Add class:(VisitorHub)
+
+								-Aslýnda tablomuza baktýðýmýz zaman her bir gün 5 saniye sürecek ve Her gün içerisinde 5 farklý þehire random deðer atanacak.Totalde 10 ardýþýk günün deðeri tabloya eklenecek.
+										Sonra iþlemler toplam 50 sn sürecek ve her saniyede tablonun son hali gözükecek.toplamda 50 satýr kayýt eklenmiþ olacak.buiþlemler postmande gerçekleþecek.
+
+								8)Add Controller():
+									-Ýþlemlerin tetikleneceði bir controller olacak.Api'de öyle bir iþlem yapacagýzki bu yazdýgýmýz iþlem sayesinde her saniyede otomatik olarak bir tane veri veritabanýna kayýt olacak.
+										Bunu saðladýðýmýz için chart sürekli hareketli gözükecek.
+									-Verisetimizi otomatik olarak oluþturduk.Postman aracýlýðýyla verisetini veritabanýna oluþturup aktarmýþ olduk.
+
+								9)Pivot table oluþturma(CrossTab)
+									-SignalR da gelecek olan verileri istediðimiz formata çevirmemize yarar.
+									-Amacýmýz ilgili tarihlerde bu þehri kaç kiþi ziyaret etmiþ bunu göstermek istiyoruz.
+									-CrossTab nedir:
+										-aslýnda burada yýllara göre bir deðiþim tablosu oluþturmuþ olacagýz.
+										-Veritabanýnda yeni bir db oluþturalým.
+										-Crosstab sorgusunu:
+											select * from crosstab
+											(
+												'select "VisitDate","City","CityVisitCount"
+												from "Visitors"
+												order by 1,2'
+											)as ct("VisitDate" date,City1 int,City2 int,City3 int,City4 int,City5 int);
+											-Modelin içerisindeki VisitorService'e gidio sorgumuzu yapýþtýrakým.
+
+								10)Proje içerisine SignalR'ý consume edeceðimiz Yeni bir proje ekleyelim.Baþka bir projede consume edelim.
+									-Solution add project: (SignalRConsume)-bu proje client olacak SignalRApi ise Server olacak
+
+								-Þimdi yapýlandýrmalarýmýz yapalým.SignalRApi-Startup
+									-burada cors metodu ile consume üzerinden serveri tüketmemize izin veren metot.
+								-Consume iþlemi için:
+										-SignalRConsume/Views/Home/Index
+										-Buradan önce signalR ile ilgili bir kütüphane gerekli.Consume pro-add :client side library ayarlamalarý yaptýktan sonra indexi düzenleyebiliriz.
+
+
+								11)PostgreSql de bir sorundan kaynaklý mssql'e geçirecegiz.
+									-Solution Add procejt asp net core api
+										-add folder:DAL (context and visitor)
+										-add folder:hubs
+										-add folder:Models
+									-manage nuget:
+										-Microsoft.EntityFrameworkCore
+										-Microsoft.EntityFrameworkCore.Design
+										-Microsoft.EntityFrameworkCore.Tools
+										-Microsoft.EntityFrameworkCore.SqlServer
+									-appsettings.json
+									-startup.cs
+									-visitorcontroller
+									-visitorservice
+									-visitorhub
+									-visitorchart
+									-startup.cs
+
+									-sql sorgusu:
+										"select tarih,[1],[2],[3],[4],[5] from (select[City],CityVisitCount,Cast([VisitDate] as date)" +
+										"as tarih from Visitors) as visitTable Pivot (sum(CityVisitCount) for City in ([1],[2],[3],[4],[5]))" +
+										"as pivottable order by tarih asc"
+									-Þimdi verileri chartta gösterrmeyi deneyelim.
+
+
+
+
+						####################### Rol Listesi ve Rol ekleme Ýþlemleri ########################
+						-Areas/admin/controller/add:
+							-1)RoleController:
+								-Atama iþlemi yapmak için AppRole için ya DTO ya yada bir modele ihtiyacýmýz var.(Area/Model/add class)CreateRoleViewModel
+								-güncelleme iþlemi yapmak için AppRole için ya DTO ya yada bir modele ihtiyacýmýz var.(Area/Model/add class)UpdateRoleViewModel
+
+						-Giriþ yapmayýnca doðru sayfaya gitmiyor.Startup'taki configurasyon ayarlarýna gidelim.
+
+
+						ROL ATAMALARI:
+						-Kullanýcýlarý rolleri ile birlikte listeleme:
+							-RoleController içerisinde devam ettirelim.
+							-Liste içerisinde bir model döneceðiz .bunun için bir model ekleyelim.
+						-Rol Ata iþlemþ:
+							-
+
+
+
+						Member Paneli revizeler:
+							-Alt taraftaki proje kýsmýný son eklenen 4 tur rotasýný getirmek istiyoruz.
+							-Bir ViewComponent oluþturduk(_LastDestinations)
+								-Component'in view sayfasýna kodlarýmýzý taþýdýk.
+								-Burada bir sorguya ihtiyacýmýz var.
+									-DAL/Abstract/IDestinationDal'a gidelim.
+
+
+
+						-dashboard
+						-Comment
+						-destination
+						-user
+						-contactus
+						-guide
+						-Excel
+						-mail
+						-city
+						-account
+						-announcement
+						-guide mediatR
+						-role
+
+
+
+
+
+						###################################### Reset Password
+						-Models
+
+
+
+									
+									
+									
+												
+											
+													
+									

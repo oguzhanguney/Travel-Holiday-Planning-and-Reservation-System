@@ -1,0 +1,29 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!doctype html>
+<html lang="zxx">
+
+@* HeaderPartiali çağırmak için: *@
+@await Html.PartialAsync("~/Views/LayoutPartial/_HeaderPartial.cshtml")
+
+<body>
+    @* _NavbarLayout çağırmak için: *@
+    @await Html.PartialAsync("~/Views/LayoutPartial/_NavbarPartial.cshtml")
+
+    @RenderBody()
+    @*Section:1*@
+    @*Section:2*@
+    @*Section:3*@
+    @*part:4*@
+
+    @* _FooterPartial çağırmak için: *@
+    @await Html.PartialAsync("~/Views/LayoutPartial/_FooterPartial.cshtml")
+
+    @* _ScriptsPartial çağırmak için: *@
+    @await Html.PartialAsync("~/Views/LayoutPartial/_ScriptsPartial.cshtml")
+
+</body>
+</html> 
